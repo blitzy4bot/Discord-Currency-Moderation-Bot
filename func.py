@@ -6,7 +6,7 @@ con = sqlite3.connect("users.db")
 cursor = con.cursor()
 
 
-default_admin = [0, "Administrator", 99999999, 1, 1, "Default admin account"]
+default_admin = [0, "Administrator", 99999999, 4, 1, "Default admin account"]
 
 class Discord_User:
 
@@ -72,7 +72,7 @@ class ModUser(Discord_User):
     
 
 def createTableinDB():
-    cursor.execute("create table if not exists USERS (user_id, username, gold, isMod, isActive, additionalInfo)")
+    cursor.execute("create table if not exists USERS (user_id, username, gold, modLevel, isActive, additionalInfo)")
     userEntryinDB(default_admin)
 
 def userEntryinDB(x):
@@ -91,11 +91,23 @@ def initializeUsers(x):
     print(y_list)
 
 def deleteMod(x):
-    cursor.execute(f"""update USERS set isMod = 0 where user_id = {x.id}""")
+    cursor.execute(f"""update USERS set modLevel = 0 where user_id = {x.id}""")
     con.commit()
 
 def inititalizeMod(x):
-    cursor.execute(f"""update USERS set isMod = 1 where user_id = {x.id}""")
+    cursor.execute(f"""update USERS set modLevel = 1 where user_id = {x.id}""")
+    con.commit()
+
+def deleteSuperuser(x):
+    cursor.execute(f"""update USERS set modLevel = 0 where user_id = {x.id}""")
+    con.commit()
+
+def initializeSuperuser(x):
+    cursor.execute(f"""update USERS set modLevel = 3 where user_id = {x.id}""")
+    con.commit()
+
+def initializeOwner(x):
+    cursor.execute(f"""update USERS set modLevel = 4 where user_id = {x.id}""")
     con.commit()
 
 def autoInitialize(x):
@@ -106,20 +118,26 @@ def resetUsers():
     cursor.execute("drop table USERS")
     createTableinDB()
 
-def isMod(user):
-    value = cursor.execute(f"""select isMod from USERS where user_id = {user.id}""")
-    return value.fetchone()
+def getModLevel(user):
+    value = cursor.execute(f"""select modLevel from USERS where user_id = {user.id}""")
+    result = value.fetchone()
+    for value in result:
+        return value
 
 def addGoldtoUser(user, adress, ammount):
-    if 1 in isMod(user):
+    if getModLevel(user) >= 3:
         if int(ammount) + getCurrentBalance(adress) <= 99999999:
             cursor.execute(f"""update USERS set gold = gold+{ammount} where user_id = {adress.id}""")
             con.commit()
             return 0
+        else:
+            cursor.execute(f"""update USERS set gold = 99999999 where user_id = {adress.id}""")
+            con.commit()
+
 
 def deductGoldfromUser(user, adress, ammount):
-    if 1 in isMod(user):
-        if int(ammount) >= getCurrentBalance(user):
+    if getModLevel(user) >= 3:
+        if int(ammount) >= getCurrentBalance(adress):
             cursor.execute(f"""update USERS set gold = 0 where user_id = {adress.id}""")
             con.commit()
         else:
@@ -127,7 +145,13 @@ def deductGoldfromUser(user, adress, ammount):
             con.commit()
         return 0
 
-def deductGoldfromUserbyADMIN(adress, ammount):
+def getCurrentBalance(x):
+    value = cursor.execute(f"""select gold from USERS where user_id = {x.id}""")
+    result = value.fetchone()
+    for value in result:
+        return value
+
+def ownerCommandDeduceGold(adress, ammount):
     if int(ammount) >= getCurrentBalance(adress):
         cursor.execute(f"""update USERS set gold = 0 where user_id = {adress.id}""")
         con.commit()
@@ -136,16 +160,15 @@ def deductGoldfromUserbyADMIN(adress, ammount):
         con.commit()
     return 0
 
-
-def getCurrentBalance(x):
-    value = cursor.execute(f"""select gold from USERS where user_id = {x.id}""")
-    result = value.fetchone()
-    for value in result:
-        return value
+def ownerComandsetGold(x, y):
+    if int(y) <= 99999999:
+        cursor.execute(f"""update USERS set gold = {y} where user_id = {x.id}""")
+        con.commit()
+        return 0
 
 
 def ownerComandaddGold(x, y):
     if int(y) <= 99999999:
-        cursor.execute(f"""update USERS set gold = {y} where user_id = {x.id}""")
+        cursor.execute(f"""update USERS set gold = gold+{y} where user_id = {x.id}""")
         con.commit()
         return 0
