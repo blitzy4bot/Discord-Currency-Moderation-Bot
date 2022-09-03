@@ -46,7 +46,7 @@ def getALLCMDS():
 @bot.event
 async def on_ready():
     #getALLCMDS()
-    await bot.change_presence(activity=discord.Game(name="On toilet"))
+    await bot.change_presence(activity=discord.Game(name="On toilet -> Doing your mom"))
     print('logged in as {0.user}'.format(bot))
 
 
@@ -194,7 +194,9 @@ async def getModerationLevel(ctx):
 async def checkModerationLevel(ctx, user: discord.Member):
     if getModLevel(ctx.author) >= 3:
         if getModLevel(user) != 4:
-            await ctx.send(f"{user.mention} moderation evel equals {getModLevel(user)}.")
+            await ctx.send(f"{user.mention} moderation level equals {getModLevel(user)}.")
+        else:
+            await ctx.send(f"{ctx.author.mention} moderation level equals 3.")
     else:
         await ctx.send(f"You cant use this command {ctx.author.mention}!")
 
