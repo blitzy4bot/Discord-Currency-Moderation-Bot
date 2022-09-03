@@ -1,3 +1,4 @@
+from datetime import datetime
 import discord
 import random
 from discord.ext import commands
@@ -45,6 +46,7 @@ def getALLCMDS():
 @bot.event
 async def on_ready():
     #getALLCMDS()
+    await bot.change_presence(activity=discord.Game(name="On toilet"))
     print('logged in as {0.user}'.format(bot))
 
 
@@ -92,12 +94,24 @@ async def SUHelp(ctx):
 async def helpBasic(ctx):
     help_embed= discord.Embed(title=f"**HELP COMMAND** :small_orange_diamond: Version: {ver}",
     icon_url=bot.user.avatar_url)
-    help_embed.add_field(name=f'__{bot.command_prefix}eco__', value=':coin:', inline=True)
-    help_embed.add_field(name=f'__{bot.command_prefix}fun__', value=':new_moon_with_face:', inline=True)
-    help_embed.add_field(name=f'__{bot.command_prefix}mod__', value=':hammer_and_pick:', inline=True)
-    help_embed.add_field(name=f'__{bot.command_prefix}admin__', value=':gear:', inline=True)
+    help_embed.add_field(name=f'__{bot.command_prefix}useful__', value=':white_small_square:', inline=False)
+    help_embed.add_field(name=f'__{bot.command_prefix}eco__', value=':coin:', inline=False)
+    help_embed.add_field(name=f'__{bot.command_prefix}fun__', value=':new_moon_with_face:', inline=False)
+    help_embed.add_field(name=f'__{bot.command_prefix}mod__', value=':hammer_and_pick:', inline=False)
+    help_embed.add_field(name=f'__{bot.command_prefix}admin__', value=':gear:', inline=False)
     help_embed.set_footer(text=f'PLEASE RUN -> {bot.command_prefix}initall <- AFTER ADDING THE BOT', icon_url='https://cdn.pixabay.com/photo/2013/04/01/09/02/important-98442__340.png')
     await ctx.send(embed=help_embed)
+
+
+@bot.command(name='useful', pass_context=True)
+async def helpCommandEconmonics(ctx):
+    help_embed = discord.Embed(title=f"**COMMANDS-USEFUL** :small_orange_diamond: PREFIX= {bot.command_prefix}",
+    icon_url=bot.user.avatar_url)
+    help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/03/21/02/00/information-2160912__340.png')
+    help_embed.add_field(name='```serverinfo```', value=f'Shows info about the server.\n Usage: {bot.command_prefix}serverinfo', inline=True)
+    #help_embed.add_field(name='```profile```', value=f'Shows your bot-profile.\n Usage: {bot.command_prefix}profile', inline=True)
+    await ctx.send(embed=help_embed)
+
 
 @bot.command(name='eco', pass_context=True)
 async def helpCommandEconmonics(ctx):
@@ -122,8 +136,8 @@ async def helpCommandEconmonics(ctx):
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2021/05/31/07/12/dogecoin-6298018_960_720.png')
     help_embed.add_field(name='```dice```', value=f'Roll a dice (1-6).\n Usage: {bot.command_prefix}dice', inline=True)
     help_embed.add_field(name='```square```', value=f'square a number.\n Usage: {bot.command_prefix}square NUM', inline=True)
-    help_embed.add_field(name='```rickroll```', value=f'Rickroll another user. Gold cost= {rickroll_price}\n Usage: {bot.command_prefix}rickroll mention/ID', inline=True)
-    help_embed.add_field(name='```cn```', value=f'Change another users nickname. Gold cost= {change_nickname_price}\n Usage: {bot.command_prefix}cn mention/ID newNickname', inline=True)
+    help_embed.add_field(name='```rickroll```', value=f'Rickroll another user. Gold cost= {rickroll_price}.\n Usage: {bot.command_prefix}rickroll mention/ID', inline=True)
+    help_embed.add_field(name='```cn```', value=f'Change another users nickname. Gold cost= {change_nickname_price}.\n Usage: {bot.command_prefix}cn mention/ID newNickname', inline=True)
     await ctx.send(embed=help_embed)
 
 
@@ -153,9 +167,36 @@ async def helpCommandEconmonics(ctx):
     await ctx.send(embed=help_embed)
 
 
+@bot.command(name='serverinfo', pass_context=True)
+async def showServerinfo(ctx):
+    creationTime = ctx.guild.created_at.strftime("%d/%m/%y")
+    serverinfo_embed = discord.Embed(title=f"**SERVERINFO** :globe_with_meridians:", icon_url=bot.user.avatar_url, color=0xeaf50e)
+    serverinfo_embed.set_thumbnail(url="https://cdn.pixabay.com/photo/2016/06/26/23/32/information-1481584__340.png")
+    serverinfo_embed.add_field(name='Name', value=f'{ctx.guild.name}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Server-ID', value=f'{ctx.guild.id}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Owner', value=f'{ctx.guild.owner_id}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Channelcount (text)', value=f'{len(ctx.guild.text_channels)}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Channelcount (voice)', value=f'{len(ctx.guild.voice_channels)}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Channelcount (all)', value=f'{len(ctx.guild.text_channels)+len(ctx.guild.voice_channels)}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Rolecount', value=f'{len(ctx.guild.roles)}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Membercount', value=f'{ctx.guild.member_count}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Created at', value=f'{creationTime}\n--------------------', inline=True)
+    serverinfo_embed.set_footer(text=f'Requested by: {ctx.author.name}/{ctx.author.id}')
+    await ctx.send(embed=serverinfo_embed)
+
+
 @bot.command(name='getrole', pass_context=True)
 async def getModerationLevel(ctx):
     await ctx.send(f"Your moderation level: {getModLevel(ctx.author)}.")
+
+
+@bot.command(name='checkrole', pass_context=True)
+async def checkModerationLevel(ctx, user: discord.Member):
+    if getModLevel(ctx.author) >= 3:
+        if getModLevel(user) != 4:
+            await ctx.send(f"{user.mention} moderation evel equals {getModLevel(user)}.")
+    else:
+        await ctx.send(f"You cant use this command {ctx.author.mention}!")
 
 
 @bot.event
@@ -184,7 +225,7 @@ async def removeRole(ctx, user: discord.Member, role: discord.Role):
 
 @bot.command(name='0role+', pass_context=True)
 async def addRole(ctx, user: discord.Member, role: discord.Role):
-    if getModLevel() >= 3:
+    if getModLevel() == 4:
         await user.add_roles(role)
         await ctx.send(f'Added {user.mention} to {role} :green_circle:')
         print(f"{ctx.author}/{ctx.author.id} added role: {role}/{role.id} --> to user: {user}/{user.id}")
@@ -192,7 +233,7 @@ async def addRole(ctx, user: discord.Member, role: discord.Role):
 
 @bot.command(name='0role-', pass_context=True)
 async def removeRole(ctx, user: discord.Member, role: discord.Role):
-    if getModLevel() >= 3:
+    if getModLevel() == 4:
         await user.remove_roles(role)
         await ctx.send(f'Removed {user.mention} from {role} :green_circle:')
 
