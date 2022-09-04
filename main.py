@@ -85,6 +85,8 @@ async def SUHelp(ctx):
         help_embed.add_field(name=f'```delmod```', value='Remove a Bot-Moderator', inline=True)
         help_embed.add_field(name=f'```addadmin```', value='Add a new Bot-Admin', inline=True)
         help_embed.add_field(name=f'```deladmin```', value='Remove a Bot-Admin', inline=True)
+        help_embed.add_field(name=f'```getrole```', value='get your moderation level', inline=True)
+        help_embed.add_field(name=f'```checkrole```', value='get the moderation level of another user', inline=True)
         help_embed.add_field(name=f'```gold+```', value=f'Add gold to a user.\n Usage: {bot.command_prefix}gold+ mention/ID ammount', inline=True)
         help_embed.add_field(name=f'```gold-```', value=f'Remove gold from a user.\n Usage: {bot.command_prefix}gold- mention/ID ammount', inline=True)
         await ctx.send(embed=help_embed)
@@ -174,7 +176,7 @@ async def showServerinfo(ctx):
     serverinfo_embed.set_thumbnail(url="https://cdn.pixabay.com/photo/2016/06/26/23/32/information-1481584__340.png")
     serverinfo_embed.add_field(name='Name', value=f'{ctx.guild.name}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Server-ID', value=f'{ctx.guild.id}\n--------------------', inline=True)
-    serverinfo_embed.add_field(name='Owner', value=f'{ctx.guild.owner_id}\n--------------------', inline=True)
+    serverinfo_embed.add_field(name='Owner', value=f'{ctx.guild.owner.name}#{ctx.guild.owner.discriminator}/{ctx.guild.owner_id}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Channelcount (text)', value=f'{len(ctx.guild.text_channels)}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Channelcount (voice)', value=f'{len(ctx.guild.voice_channels)}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Channelcount (all)', value=f'{len(ctx.guild.text_channels)+len(ctx.guild.voice_channels)}\n--------------------', inline=True)
@@ -243,10 +245,10 @@ async def removeRole(ctx, user: discord.Member, role: discord.Role):
 @bot.command(name='ban', pass_context=True)
 @has_permissions(ban_members=True)
 async def banMember(ctx, user: discord.Member, *args):
-    if getModLevel() >= 1:
+    if getModLevel(ctx.author) >= 1:
         reasonBan = ' '.join(args)
         await user.ban(reason=reasonBan)
-        await ctx.send(f'{user.mention} was banned :green_circle:')
+        await ctx.send(f'{user.name}#{user.discriminator} was banned :green_circle:')
         await user.send(f'You was banned from {ctx.guild.name}. Reason: {reasonBan}.')
         print(f"{ctx.author}/{ctx.author.id} banned user: {user}/{user.id}")
 
@@ -256,7 +258,7 @@ async def banMember(ctx, user: discord.Member, *args):
 async def kickMember(ctx, user: discord.Member, *args):
     reasonKick = ' '.join(args)
     await user.kick(reason=reasonKick)
-    await ctx.send(f'{user.mention} was kicked :green_circle:')
+    await ctx.send(f'{user.name}#{user.discriminator} was kicked :green_circle:')
     await user.send(f'You was kicked from {ctx.guild.name}. Reason: {reasonKick}.')
     print(f"{ctx.author}/{ctx.author.id} kicked user: {user}/{user.id}")
 
@@ -266,7 +268,7 @@ async def kickMember(ctx, user: discord.Member, *args):
 async def unbanMember(ctx, user: discord.User):
     if getModLevel(ctx.author) >= 1:
         await ctx.guild.unban(user)
-        await ctx.send(f'Unbanned {user.mention} from the guild :green_circle:')
+        await ctx.send(f'Unbanned {user.name}#{user.discriminator} from the guild :green_circle:')
         print(f"{ctx.author}/{ctx.author.id} unbanned user: {user}/{user.id}")
 
 
