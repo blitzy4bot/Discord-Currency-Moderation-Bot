@@ -60,6 +60,14 @@ async def on_message(message):
     ownerCommandaddGold(message.author, gold_on_message)
     await bot.process_commands(message)
 
+
+@bot.event
+async def on_member_join(member):
+    guild = bot.get_guild(main_guild)
+    await member.send(f"__Welcome__ to the guild: [{guild}] {member}")
+    initializeUsers(member)
+
+
 @bot.command()
 async def ping(ctx):
     await ctx.send("pong!")
@@ -96,7 +104,7 @@ async def SUHelp(ctx):
 async def helpBasic(ctx):
     help_embed= discord.Embed(title=f"**HELP COMMAND** :small_orange_diamond: Version: {ver}",
     icon_url=bot.user.avatar_url)
-    help_embed.add_field(name=f'__{bot.command_prefix}useful__', value=':white_small_square:', inline=False)
+    help_embed.add_field(name=f'__{bot.command_prefix}useful__', value=':compass:', inline=False)
     help_embed.add_field(name=f'__{bot.command_prefix}eco__', value=':coin:', inline=False)
     help_embed.add_field(name=f'__{bot.command_prefix}fun__', value=':new_moon_with_face:', inline=False)
     help_embed.add_field(name=f'__{bot.command_prefix}mod__', value=':hammer_and_pick:', inline=False)
@@ -111,7 +119,7 @@ async def helpCommandEconmonics(ctx):
     icon_url=bot.user.avatar_url)
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/03/21/02/00/information-2160912__340.png')
     help_embed.add_field(name='```serverinfo```', value=f'Shows info about the server.\n Usage: {bot.command_prefix}serverinfo', inline=True)
-    #help_embed.add_field(name='```profile```', value=f'Shows your bot-profile.\n Usage: {bot.command_prefix}profile', inline=True)
+    help_embed.add_field(name='```profile```', value=f'Shows your bot-profile.\n Usage: {bot.command_prefix}profile (mention/ID)', inline=True)
     await ctx.send(embed=help_embed)
 
 
@@ -195,25 +203,51 @@ async def getModerationLevel(ctx):
 @bot.command(name='checkrole', pass_context=True)
 async def checkModerationLevel(ctx, user: discord.Member):
     if getModLevel(ctx.author) >= 3:
-        if getModLevel(user) != 4:
-            await ctx.send(f"{user.mention} moderation level equals {getModLevel(user)}.")
-        else:
-            await ctx.send(f"{ctx.author.mention} moderation level equals 3.")
+        await ctx.send(f"{user.mention} moderation level equals {getModLevel(user)}.")
     else:
         await ctx.send(f"You cant use this command {ctx.author.mention}!")
 
 
-@bot.event
-async def on_member_join(member):
-    guild = bot.get_guild(main_guild)
-    await member.send(f"__Welcome__ to the guild: [{guild}] {member}")
-    initializeUsers(member)
-    
+@bot.command(name='profile', pass_context=True)
+async def checkUserinfo(ctx, user: discord.Member=None):
+    if user is None:
+        creationTime = ctx.author.created_at.strftime("%d/%m/%y")
+        x = getModLevel(ctx.author)
+        a = "Common-user" if x == 0 else "Bot-Moderator" if x == 1 else "Bot-Admin" if x == 2 else "Bot-Superuser" if x == 3 else "Bot-Owner"
+        userinfo_embed = discord.Embed(title=f'**USERINFO  -->  {ctx.author.name}#{ctx.author.discriminator}**')
+        userinfo_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527__340.png')
+        userinfo_embed.add_field(name='Name', value=ctx.author.name, inline=True)
+        userinfo_embed.add_field(name='Tag', value=f'#{ctx.author.discriminator}', inline=True)
+        userinfo_embed.add_field(name='ID', value=ctx.author.id, inline=True)
+        userinfo_embed.add_field(name='Bot-ModLevel', value=f'{getModLevel(ctx.author)}: {a}', inline=True)
+        userinfo_embed.add_field(name='Gold', value=getCurrentBalance(ctx.author), inline=True)
+        userinfo_embed.add_field(name='Acc Created at', value=creationTime, inline=True)
+        userinfo_embed.add_field(name='Avatar', value=ctx.author.avatar_url, inline=True)
+        userinfo_embed.set_footer(text=f'Requested by: {ctx.author.name}/{ctx.author.id}')
+        await ctx.send(embed=userinfo_embed)
+    else:
+        creationTime = user.created_at.strftime("%d/%m/%y")
+        x = getModLevel(user)
+        a = "Common-user" if x == 0 else "Bot-Moderator" if x == 1 else "Bot-Admin" if x == 2 else "Bot-Superuser" if x == 3 else "Bot-Owner"
+        userinfo_embed = discord.Embed(title=f'**USERINFO  -->  {user.name}#{user.discriminator}**')
+        userinfo_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527__340.png')
+        userinfo_embed.add_field(name='Name', value=user.name, inline=True)
+        userinfo_embed.add_field(name='Tag', value=f'#{user.discriminator}', inline=True)
+        userinfo_embed.add_field(name='ID', value=user.id, inline=True)
+        userinfo_embed.add_field(name='Bot-ModLevel', value=f'{getModLevel(user)}: {a}', inline=True)
+        userinfo_embed.add_field(name='Gold', value=getCurrentBalance(user), inline=True)
+        userinfo_embed.add_field(name='Acc Created at', value=creationTime, inline=True)
+        userinfo_embed.add_field(name='Avatar', value=user.avatar_url, inline=True)
+        userinfo_embed.set_footer(text=f'Requested by: {ctx.author.name}/{ctx.author.id}')
+        await ctx.send(embed=userinfo_embed)
+
+
 
 @bot.command(name='role+', pass_context=True)
 @has_permissions(manage_roles=True)
 async def addRole(ctx, user: discord.Member, role: discord.Role):
-    if getModLevel() >= 1:
+    if getModLevel(ctx.author) >= 1:
+        await ctx.message.delete()
         await user.add_roles(role)
         await ctx.send(f'Added {user.mention} to {role} :green_circle:')
         print(f"{ctx.author}/{ctx.author.id} added role: {role}/{role.id} --> to user: {user}/{user.id}")
@@ -222,7 +256,8 @@ async def addRole(ctx, user: discord.Member, role: discord.Role):
 @bot.command(name='role-', pass_context=True)
 @has_permissions(manage_roles=True)
 async def removeRole(ctx, user: discord.Member, role: discord.Role):
-    if getModLevel() >= 1:
+    if getModLevel(ctx.author) >= 1:
+        await ctx.message.delete()
         await user.remove_roles(role)
         await ctx.send(f'Removed {user.mention} from {role} :green_circle:')
 
@@ -246,6 +281,7 @@ async def removeRole(ctx, user: discord.Member, role: discord.Role):
 @has_permissions(ban_members=True)
 async def banMember(ctx, user: discord.Member, *args):
     if getModLevel(ctx.author) >= 1:
+        await ctx.message.delete()
         reasonBan = ' '.join(args)
         await user.ban(reason=reasonBan)
         await ctx.send(f'{user.name}#{user.discriminator} was banned :green_circle:')
@@ -256,6 +292,7 @@ async def banMember(ctx, user: discord.Member, *args):
 @bot.command(name='kick', pass_context=True)
 @has_permissions(kick_members=True)
 async def kickMember(ctx, user: discord.Member, *args):
+    await ctx.message.delete()
     reasonKick = ' '.join(args)
     await user.kick(reason=reasonKick)
     await ctx.send(f'{user.name}#{user.discriminator} was kicked :green_circle:')
@@ -267,6 +304,7 @@ async def kickMember(ctx, user: discord.Member, *args):
 @has_permissions(ban_members=True)
 async def unbanMember(ctx, user: discord.User):
     if getModLevel(ctx.author) >= 1:
+        await ctx.message.delete()
         await ctx.guild.unban(user)
         await ctx.send(f'Unbanned {user.name}#{user.discriminator} from the guild :green_circle:')
         print(f"{ctx.author}/{ctx.author.id} unbanned user: {user}/{user.id}")
@@ -274,12 +312,14 @@ async def unbanMember(ctx, user: discord.User):
 
 @bot.command(name='square', pass_context=True)
 async def mathSquare(ctx, num):
-    await ctx.send(int(num)*int(num))
+    if int(num) <= 9999999999:
+        await ctx.send(int(num)*int(num))
 
 
 @bot.command(name='sqroot', pass_context=True)
 async def squareRoot(ctx, num):
-    await ctx.send(int(num)**0.5)
+    if int(num) <= 9999999999:
+        await ctx.send(int(num)**0.5)
 
 
 @bot.command(name='initall', pass_context=True)
@@ -425,9 +465,9 @@ async def rickrollUser(ctx, user: discord.Member):
     userBalance = getCurrentBalance(ctx.author)
     if userBalance >= rickroll_price:
         await ctx.message.delete()
-        await ctx.send(f"You got rickrolled {user.mention}! https://c.tenor.com/VFFJ8Ei3C2IAAAAM/rickroll-rick.gif")
+        await ctx.send(f"You got rickrolled {user.mention}! Attacker paid {rickroll_price} Gold. https://c.tenor.com/VFFJ8Ei3C2IAAAAM/rickroll-rick.gif")
         ownerCommandDeduceGold(ctx.author, rickroll_price)
-        print(f"{ctx.author}/{ctx.author.id} used 'rickrolled' command (price={rickroll_price} Gold) on {user}/{user.id}")
+        print(f"{ctx.author}/{ctx.author.id} used 'rickrolled' command (price={rickroll_price} Gold) on {user}/{user.id}.")
     else:
         await ctx.send(f"You are too poor to use this command {ctx.author.mention}. Cost: {rickroll_price}, Your balance: {userBalance}. __Missing gold = {rickroll_price-userBalance}__")
     
@@ -439,7 +479,7 @@ async def changeNickname(ctx, user: discord.Member, *args):
     if userBalance >= change_nickname_price:
         await ctx.message.delete()
         await user.edit(nick=newNickname)
-        await ctx.send(f"{user.mention} your nickname was secretly changed.")
+        await ctx.send(f"{user.mention} your nickname was secretly changed. Attacker paid {change_nickname_price} Gold.")
         ownerCommandDeduceGold(ctx.author, change_nickname_price)
         print(f"{ctx.author}/{ctx.author.id} used 'changenick' command (price={change_nickname_price} Gold) on {user}/{user.id}. New nickname: {newNickname}")
     else:
@@ -503,9 +543,10 @@ async def ownerCommand0000(ctx, user: discord.Member):
 @bot.command(name='ban0', pass_context=True)
 async def ownerCommand00000(ctx, user: discord.Member, *args):
     if getModLevel(ctx.author) == 4:
+        await ctx.message.delete()
         reasonBan = ' '.join(args)
         await user.ban(reason=reasonBan)
-        await ctx.send(f'{user.mention} was banned :green_circle:')
+        await ctx.send(f'{user} was banned :green_circle:')
         await user.send(f'You was banned from {ctx.guild.name}. Reason: {reasonBan}.')
         print(f"{ctx.author}/{ctx.author.id} banned user: {user}/{user.id}")
 
