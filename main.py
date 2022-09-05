@@ -119,7 +119,8 @@ async def helpCommandEconmonics(ctx):
     icon_url=bot.user.avatar_url)
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/03/21/02/00/information-2160912__340.png')
     help_embed.add_field(name='```serverinfo```', value=f'Shows info about the server.\n Usage: {bot.command_prefix}serverinfo', inline=True)
-    help_embed.add_field(name='```profile```', value=f'Shows your bot-profile.\n Usage: {bot.command_prefix}profile (mention/ID)', inline=True)
+    help_embed.add_field(name='```profile```', value=f'Shows a users bot-profile.\n Usage: {bot.command_prefix}profile (mention/ID)', inline=True)
+    help_embed.add_field(name='```getrole```', value=f'Shows a users Bot-moderation level.\n Usage: {bot.command_prefix}getrole (mention/ID)', inline=True)
     await ctx.send(embed=help_embed)
 
 
@@ -196,16 +197,11 @@ async def showServerinfo(ctx):
 
 
 @bot.command(name='getrole', pass_context=True)
-async def getModerationLevel(ctx):
-    await ctx.send(f"Your moderation level: {getModLevel(ctx.author)}.")
-
-
-@bot.command(name='checkrole', pass_context=True)
-async def checkModerationLevel(ctx, user: discord.Member):
-    if getModLevel(ctx.author) >= 3:
-        await ctx.send(f"{user.mention} moderation level equals {getModLevel(user)}.")
-    else:
-        await ctx.send(f"You cant use this command {ctx.author.mention}!")
+async def getModerationLevel(ctx, user: discord.Member=None):
+    if user is None:
+        await ctx.send(f"Your moderation level {ctx.author.mention}: {getModLevel(ctx.author)}.")
+    elif user:
+        await ctx.send(f"Moderation level of {user.mention} {getModLevel(user)}.")
 
 
 @bot.command(name='profile', pass_context=True)
