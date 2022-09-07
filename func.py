@@ -136,6 +136,24 @@ def getModLevel(user):
     for value in result:
         return value
 
+def isActive(user):
+    value = cursor.execute(f"""select isActive from USERS where user_id = {user.id}""")
+    result = value.fetchone()
+    for value in result:
+        return value
+
+def setInactive(user, adress):
+    if getModLevel(user) >= 2 and getModLevel(user) > getModLevel(adress):
+        cursor.execute(f"""update USERS set isActive = 0 where user_id = {adress.id}""")
+        con.commit()
+        return 0
+
+def setActive(user, adress):
+    if getModLevel(user) >= 2 and getModLevel(user) > getModLevel(adress):
+        cursor.execute(f"""update USERS set isActive = 1 where user_id = {adress.id}""")
+        con.commit()
+        return 0
+
 def addGoldtoUser(user, adress, ammount):
     if getModLevel(user) >= 3:
         if int(ammount) + getCurrentBalance(adress) <= 99999999:
@@ -210,7 +228,7 @@ def ownerComandsetGold(x, y):
 
 
 def ownerCommandaddGold(adress, ammount):
-    if int(ammount) + getCurrentBalance(adress) <= 99999999:
+    if int(ammount) + int(getCurrentBalance(adress)) <= 99999999:
         cursor.execute(f"""update USERS set gold = gold+{ammount} where user_id = {adress.id}""")
     else:
         cursor.execute(f"""update USERS set gold = 99999999 where user_id = {adress.id}""")

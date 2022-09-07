@@ -1,6 +1,7 @@
 from datetime import datetime
 import discord
 import random
+from discord import Color
 from discord.ext import commands
 from discord.ext.commands import has_permissions
 from discord.utils import get
@@ -55,6 +56,15 @@ async def on_ready():
 #    print("Error occured!")
 #    pass
 
+
+#@bot.event
+#async def on_command(ctx, *message):
+#    if int(isActive(ctx.author)) == 1:
+#        await bot.process_commands(message)
+#    else:
+#        await ctx.send(f"{ctx.author} You banned from using Bot commands!")
+
+
 @bot.event
 async def on_message(message):
     ownerCommandaddGold(message.author, gold_on_message)
@@ -76,7 +86,7 @@ async def ping(ctx):
 @bot.command(name='su', pass_context=True)
 async def SUInfo(ctx):
     if getModLevel(ctx.author) >= 3:
-        help_embed = discord.Embed(title=f"**Superuser info**", icon_url=bot.user.avatar_url)
+        help_embed = discord.Embed(title=f"**Superuser info**", icon_url=bot.user.avatar_url, color=Color.red())
         help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2013/07/13/13/41/bash-161382__340.png')
         help_embed.add_field(name=f'```Bot-Moderator```', value='Required for moderation', inline=True)
         help_embed.add_field(name=f'```Bot-Admin```', value='Sets new Bot-Moderators', inline=True)
@@ -87,14 +97,13 @@ async def SUInfo(ctx):
 @bot.command(name='suhelp', pass_context=True)
 async def SUHelp(ctx):
     if getModLevel(ctx.author) >= 3:
-        help_embed = discord.Embed(title=f"**Superuser command list**", icon_url=bot.user.avatar_url)
+        help_embed = discord.Embed(title=f"**Superuser command list**", icon_url=bot.user.avatar_url, color=Color.red())
         help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2015/02/13/09/47/question-634903__340.png')
         help_embed.add_field(name=f'```addmod```', value='Add a new Bot-Moderator', inline=True)
         help_embed.add_field(name=f'```delmod```', value='Remove a Bot-Moderator', inline=True)
         help_embed.add_field(name=f'```addadmin```', value='Add a new Bot-Admin', inline=True)
         help_embed.add_field(name=f'```deladmin```', value='Remove a Bot-Admin', inline=True)
-        help_embed.add_field(name=f'```getrole```', value='get your moderation level', inline=True)
-        help_embed.add_field(name=f'```checkrole```', value='get the moderation level of another user', inline=True)
+        help_embed.add_field(name=f'```getrole```', value=f'Get a users moderation level. \n usage {bot.command_prefix}getrole mention/ID', inline=True)
         help_embed.add_field(name=f'```gold+```', value=f'Add gold to a user.\n Usage: {bot.command_prefix}gold+ mention/ID ammount', inline=True)
         help_embed.add_field(name=f'```gold-```', value=f'Remove gold from a user.\n Usage: {bot.command_prefix}gold- mention/ID ammount', inline=True)
         await ctx.send(embed=help_embed)
@@ -103,7 +112,7 @@ async def SUHelp(ctx):
 @bot.command(name='help', pass_context=True)
 async def helpBasic(ctx):
     help_embed= discord.Embed(title=f"**HELP COMMAND** :small_orange_diamond: Version: {ver}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.add_field(name=f'__{bot.command_prefix}useful__', value=':compass:', inline=False)
     help_embed.add_field(name=f'__{bot.command_prefix}eco__', value=':coin:', inline=False)
     help_embed.add_field(name=f'__{bot.command_prefix}fun__', value=':new_moon_with_face:', inline=False)
@@ -116,7 +125,7 @@ async def helpBasic(ctx):
 @bot.command(name='useful', pass_context=True)
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-USEFUL** :small_orange_diamond: PREFIX= {bot.command_prefix}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/03/21/02/00/information-2160912__340.png')
     help_embed.add_field(name='```serverinfo```', value=f'Shows info about the server.\n Usage: {bot.command_prefix}serverinfo', inline=True)
     help_embed.add_field(name='```profile```', value=f'Shows a users bot-profile.\n Usage: {bot.command_prefix}profile (mention/ID)', inline=True)
@@ -127,7 +136,7 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='eco', pass_context=True)
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-ECONOMY** :small_orange_diamond: PREFIX= {bot.command_prefix}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2014/11/01/22/33/gold-513062__340.jpg')
     help_embed.add_field(name='```bal```', value=f'Check your Gold balance.\n Usage: {bot.command_prefix}bal', inline=True)
     help_embed.add_field(name='```check```', value=f'Check another users Gold balance.\n Usage: {bot.command_prefix}check mention/ID', inline=True)
@@ -143,7 +152,7 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='fun', pass_context=True)
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-FUN** :small_orange_diamond: PREFIX= {bot.command_prefix}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2021/05/31/07/12/dogecoin-6298018_960_720.png')
     help_embed.add_field(name='```dice```', value=f'Roll a dice (1-6).\n Usage: {bot.command_prefix}dice', inline=True)
     help_embed.add_field(name='```square```', value=f'square a number.\n Usage: {bot.command_prefix}square NUM', inline=True)
@@ -155,7 +164,7 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='mod', pass_context=True)
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-MODERATOR** :small_orange_diamond: PREFIX= {bot.command_prefix}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2013/07/12/18/00/socialism-152783__340.png')
     help_embed.add_field(name='```ban```', value=f'Ban a user.\n Usage: {bot.command_prefix}ban mention/ID', inline=True)
     help_embed.add_field(name='```unban```', value=f'Unban a user.\n Usage: {bot.command_prefix}unban mention/ID', inline=True)
@@ -169,10 +178,12 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='admin', pass_context=True)
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-ADMIN** :small_orange_diamond: PREFIX= {bot.command_prefix}",
-    icon_url=bot.user.avatar_url)
+    icon_url=bot.user.avatar_url, color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2015/12/10/16/39/shield-1086702__340.png')
-    help_embed.add_field(name='```addmod```', value=f'Add a new Bot-Moderator.\n Usage: {bot.command_prefix}ban mention/ID', inline=True)
-    help_embed.add_field(name='```delmod```', value=f'Remove a Bot-Moderator.\n Usage: {bot.command_prefix}unban mention/ID', inline=True)
+    help_embed.add_field(name='```addmod```', value=f'Add a new Bot-Moderator (Bot-Admin required).\n Usage: {bot.command_prefix}addmod mention/ID', inline=True)
+    help_embed.add_field(name='```delmod```', value=f'Remove a Bot-Moderator (Bot-Admin required).\n Usage: {bot.command_prefix}delmod mention/ID', inline=True)
+    help_embed.add_field(name='```active```', value=f'Remove the blacklist from a user (Bot-Admin required).\n Usage: {bot.command_prefix}active mention/ID', inline=True)
+    help_embed.add_field(name='```detain```', value=f'Blacklist a user so he cant use special commands (Bot-Admin required).\n Usage: {bot.command_prefix}detain mention/ID', inline=True)
     help_embed.add_field(name='```initall```', value=f'Initialize all server members to the database (required).\n Usage: {bot.command_prefix}initall', inline=True)
     help_embed.set_footer(text=f'!!! Required: ADMINISTRATOR perms !!!', icon_url='https://cdn.pixabay.com/photo/2013/04/01/09/02/important-98442__340.png')
     await ctx.send(embed=help_embed)
@@ -181,7 +192,7 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='serverinfo', pass_context=True)
 async def showServerinfo(ctx):
     creationTime = ctx.guild.created_at.strftime("%d/%m/%y")
-    serverinfo_embed = discord.Embed(title=f"**SERVERINFO** :globe_with_meridians:", icon_url=bot.user.avatar_url, color=0xeaf50e)
+    serverinfo_embed = discord.Embed(title=f"**SERVERINFO** :globe_with_meridians:", icon_url=bot.user.avatar_url, color=Color.red())
     serverinfo_embed.set_thumbnail(url="https://cdn.pixabay.com/photo/2016/06/26/23/32/information-1481584__340.png")
     serverinfo_embed.add_field(name='Name', value=f'{ctx.guild.name}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Server-ID', value=f'{ctx.guild.id}\n--------------------', inline=True)
@@ -210,7 +221,7 @@ async def checkUserinfo(ctx, user: discord.Member=None):
         creationTime = ctx.author.created_at.strftime("%d/%m/%y")
         x = getModLevel(ctx.author)
         a = "Common-user" if x == 0 else "Bot-Moderator" if x == 1 else "Bot-Admin" if x == 2 else "Bot-Superuser" if x == 3 else "Bot-Owner"
-        userinfo_embed = discord.Embed(title=f'**USERINFO  -->  {ctx.author.name}#{ctx.author.discriminator}**')
+        userinfo_embed = discord.Embed(title=f'**USERINFO  -->  {ctx.author.name}#{ctx.author.discriminator}**', color=Color.red())
         userinfo_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527__340.png')
         userinfo_embed.add_field(name='Name', value=ctx.author.name, inline=True)
         userinfo_embed.add_field(name='Tag', value=f'#{ctx.author.discriminator}', inline=True)
@@ -365,6 +376,39 @@ async def initialize_Admin(ctx, user: discord.Member):
             await ctx.send(f"New Bot-Admin {user.mention}")
             initializeAdmin(user)
 
+
+@bot.command(name='active', pass_context=True)
+async def activateMember(ctx, user: discord.Member):
+    if int(isActive(user)) == 0:
+        if setActive(ctx.author, user) == 0 and ctx.author != user:
+            await ctx.send(f"{user.mention} is now allowed to use Bot commands")
+        else:
+            await ctx.send(f"{ctx.author.mention} You dont have permission (Bot-Admin) or the target is equal or above you.")
+    else:
+        await ctx.send("This user is already allowed to use Bot commands!")
+
+
+@bot.command(name='detain', pass_context=True)
+async def detainMember(ctx, user: discord.Member):
+    if int(isActive(user)) == 1:
+        if setInactive(ctx.author, user) == 0 and ctx.author != user:
+            await ctx.send(f"{user.mention} is now banned from using special Bot commands")
+        else:
+            await ctx.send(f"{ctx.author.mention} You dont have permission (Bot-Admin) or the target is equal or above you.")
+    else:
+        await ctx.send("This user is already banned from using Bot commands!")
+
+
+@bot.command(name='activity', pass_context=True)
+async def checkActivityStatus(ctx, user:discord.Member):
+    if getModLevel(ctx.author) >= 2:
+        if int(isActive(user)) == 1:
+            await ctx.send(f"{user.mention} is allowed to use Bot commands.")
+        else:
+            await ctx.send(f"{user.mention} is banned from using special Bot commands.")
+    else:
+        await ctx.send(f"{ctx.author.mention} You dont have permission (Bot-Admin) or the target is equal or above you.")
+
 @bot.command(name='reset0', pass_context=True)
 @commands.is_owner()
 async def resetALL(ctx):
@@ -419,35 +463,38 @@ async def shareGold(ctx, user: discord.Member, ammount):
 
 @bot.command(name='rob', pass_context=True)
 async def robUser(ctx, user: discord.Member):
-    truefalse = random.randint(0, 1)
-    randomNUM = random.randint(25, 1000)
-    if getCurrentBalance(user) != 0:
-        if truefalse == 0:
-            if getCurrentBalance(ctx.author) >= randomNUM:
-                ownerCommandDeduceGold(ctx.author, randomNUM)
-                ownerCommandaddGold(user, randomNUM)
-                print(f"{ctx.author}/{ctx.author.id} tried to rob {user}/{user.id} but failed. He paid {randomNUM}")
-                await ctx.send(f"Robbery failed! Some gold was deduced from you and gifted to the target! {randomNUM} Gold")
-            else:
-                randomNUM = getCurrentBalance(ctx.author)
-                ownerCommandDeduceGold(ctx.author, randomNUM)
-                ownerCommandaddGold(user, randomNUM)
-                print(f"{ctx.author}/{ctx.author.id} tried to rob {user}/{user.id} but failed. He paid {randomNUM}")
-                await ctx.send(f"Robbery failed! Some gold was deduced from you and gifted to the target! {randomNUM} Gold")
-        elif truefalse == 1:
-            if getCurrentBalance(user) >= randomNUM:
-                ownerCommandaddGold(ctx.author, randomNUM)
-                ownerCommandDeduceGold(user, randomNUM)
-                print(f"{ctx.author}/{ctx.author.id} robbed {user}/{user.id} and got {randomNUM} Gold.")
-                await ctx.send(f"You robbed {randomNUM} from {user.mention}.")
-            else:
-                randomNUM = getCurrentBalance(user)
-                ownerCommandaddGold(ctx.author, randomNUM)
-                ownerCommandDeduceGold(user, randomNUM)
-                print(f"{ctx.author}/{ctx.author.id} robbed {user}/{user.id} and got {randomNUM} Gold.")
-                await ctx.send(f"You robbed {randomNUM} from {user.mention}.")
+    if int(isActive(ctx.author)) == 1:
+        truefalse = random.randint(0, 1)
+        randomNUM = random.randint(25, 1000)
+        if getCurrentBalance(user) != 0:
+            if truefalse == 0:
+                if getCurrentBalance(ctx.author) >= randomNUM:
+                    ownerCommandDeduceGold(ctx.author, randomNUM)
+                    ownerCommandaddGold(user, randomNUM)
+                    print(f"{ctx.author}/{ctx.author.id} tried to rob {user}/{user.id} but failed. He paid {randomNUM}")
+                    await ctx.send(f"Robbery failed! Some gold was deduced from you and gifted to the target! {randomNUM} Gold")
+                else:
+                    randomNUM = getCurrentBalance(ctx.author)
+                    ownerCommandDeduceGold(ctx.author, randomNUM)
+                    ownerCommandaddGold(user, randomNUM)
+                    print(f"{ctx.author}/{ctx.author.id} tried to rob {user}/{user.id} but failed. He paid {randomNUM}")
+                    await ctx.send(f"Robbery failed! Some gold was deduced from you and gifted to the target! {randomNUM} Gold")
+            elif truefalse == 1:
+                if getCurrentBalance(user) >= randomNUM:
+                    ownerCommandaddGold(ctx.author, randomNUM)
+                    ownerCommandDeduceGold(user, randomNUM)
+                    print(f"{ctx.author}/{ctx.author.id} robbed {user}/{user.id} and got {randomNUM} Gold.")
+                    await ctx.send(f"You robbed {randomNUM} from {user.mention}.")
+                else:
+                    randomNUM = getCurrentBalance(user)
+                    ownerCommandaddGold(ctx.author, randomNUM)
+                    ownerCommandDeduceGold(user, randomNUM)
+                    print(f"{ctx.author}/{ctx.author.id} robbed {user}/{user.id} and got {randomNUM} Gold.")
+                    await ctx.send(f"You robbed {randomNUM} from {user.mention}.")
+        else:
+            await ctx.send("You cant rob from a user that has 0 Gold!")
     else:
-        await ctx.send("You cant rob from a user that has 0 Gold!")
+        await ctx.send(f"{ctx.author} You arent allowed to use this command!")
 
 
 @bot.command(name='dice', pass_context=True)
@@ -458,29 +505,37 @@ async def diceRoll(ctx):
 
 @bot.command(name='rickroll', pass_context=True)
 async def rickrollUser(ctx, user: discord.Member):
-    userBalance = getCurrentBalance(ctx.author)
-    if userBalance >= rickroll_price:
-        await ctx.message.delete()
-        await ctx.send(f"You got rickrolled {user.mention}! Attacker paid {rickroll_price} Gold. https://c.tenor.com/VFFJ8Ei3C2IAAAAM/rickroll-rick.gif")
-        ownerCommandDeduceGold(ctx.author, rickroll_price)
-        print(f"{ctx.author}/{ctx.author.id} used 'rickrolled' command (price={rickroll_price} Gold) on {user}/{user.id}.")
+    if int(isActive(ctx.author)) == 1:
+        userBalance = getCurrentBalance(ctx.author)
+        if userBalance >= rickroll_price:
+            await ctx.message.delete()
+            await ctx.send(f"You got rickrolled {user.mention}! Attacker paid {rickroll_price} Gold. https://c.tenor.com/VFFJ8Ei3C2IAAAAM/rickroll-rick.gif")
+            ownerCommandDeduceGold(ctx.author, rickroll_price)
+            print(f"{ctx.author}/{ctx.author.id} used 'rickrolled' command (price={rickroll_price} Gold) on {user}/{user.id}.")
+        else:
+            await ctx.send(f"You are too poor to use this command {ctx.author.mention}. Cost: {rickroll_price}, Your balance: {userBalance}. __Missing gold = {rickroll_price-userBalance}__")
     else:
-        await ctx.send(f"You are too poor to use this command {ctx.author.mention}. Cost: {rickroll_price}, Your balance: {userBalance}. __Missing gold = {rickroll_price-userBalance}__")
-    
+        await ctx.send(f"{ctx.author} You arent allowed to use this command!")
     
 @bot.command(name='cn', pass_context=True)
 async def changeNickname(ctx, user: discord.Member, *args):
-    newNickname = ' '.join(args)
-    userBalance = getCurrentBalance(ctx.author)
-    if userBalance >= change_nickname_price:
-        await ctx.message.delete()
-        await user.edit(nick=newNickname)
-        await ctx.send(f"{user.mention} your nickname was secretly changed. Attacker paid {change_nickname_price} Gold.")
-        ownerCommandDeduceGold(ctx.author, change_nickname_price)
-        print(f"{ctx.author}/{ctx.author.id} used 'changenick' command (price={change_nickname_price} Gold) on {user}/{user.id}. New nickname: {newNickname}")
+    if int(isActive(ctx.author)) == 1:
+        newNickname = ' '.join(args)
+        userBalance = getCurrentBalance(ctx.author)
+        if userBalance >= change_nickname_price:
+            if getModLevel(user) >= 1:
+                await ctx.send(f"{ctx.author.mention} Changing nicknames of Bot-Moderators or higher is not permitted!")
+                print(f"{ctx.author.name}/{ctx.author.id} tried to change nickname of {user.name}/{user.id}.")
+            else:
+                await ctx.message.delete()
+                await user.edit(nick=newNickname)
+                await ctx.send(f"{user.mention} your nickname was secretly changed. Attacker paid {change_nickname_price} Gold.")
+                ownerCommandDeduceGold(ctx.author, change_nickname_price)
+                print(f"{ctx.author}/{ctx.author.id} used 'changenick' command (price={change_nickname_price} Gold) on {user}/{user.id}. New nickname: {newNickname}")
+        else:
+            await ctx.send(f"You are too poor to use this command {ctx.author.mention}. Cost: {change_nickname_price}, Your balance: {userBalance}. __Missing gold = {change_nickname_price-userBalance}__")
     else:
-        await ctx.send(f"You are too poor to use this command {ctx.author.mention}. Cost: {change_nickname_price}, Your balance: {userBalance}. __Missing gold = {change_nickname_price-userBalance}__")
-
+        await ctx.send(f"{ctx.author} You arent allowed to use this command!")
 
 @bot.command(name='guess', pass_context=True)
 async def guessNum(ctx, num):
