@@ -1,10 +1,7 @@
 from datetime import datetime
-from msilib.schema import Icon
 import discord
 import random
 import time
-from numba import jit, cuda
-import multiprocessing
 from discord import Color
 from discord.ext import commands
 from discord.ext.commands import has_permissions
@@ -14,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 token = os.getenv("TOKEN")
 
-# Moderation Levels
+# Moderation Levels - NOT RELEVANT ANYMORE
 # 0 = Common User
 # 1 = Bot-Moderator
 # 2 = Bot-Admin
@@ -29,7 +26,7 @@ change_nickname_price = 1900
 # Gold wins
 
 gold_on_message = 1
-guess_win  = 100
+guess_win = 100
 
 
 main_guild = 403275615827918878 #931690259555680256
@@ -70,11 +67,13 @@ async def on_ready():
     
 
 
-#@bot.event
-#async def on_command_error(*args, **kwargs):
-#    print("Error occured!")
-#    pass
+@bot.event
+async def on_command_error(*args, **kwargs):
+    print("Error occured!")
+    pass
 
+
+### Disabled -> inactive/detained users cant use bot-commands ###
 
 #@bot.event
 #async def on_command(ctx, *message):
@@ -83,7 +82,6 @@ async def on_ready():
 #    else:
 #        await ctx.send(f"{ctx.author} You banned from using Bot commands!")
 
-processes = []
 
 @bot.event
 async def on_message(message):
@@ -103,21 +101,22 @@ async def on_member_join(member):
     Common_User1.initializeUsersDB()
 
 
-@bot.command()
-async def ping(ctx):
-    #@jit(target_backend='cuda')
-    def ping():
-        start = time.perf_counter()
-        a = 0
-        for i in range(200000000):
-            a += i
-        print(f"Time needed {time.perf_counter() - start}")
-        return a
-    ping()
+#@bot.command()
+#async def ping(ctx):
+#    #@jit(target_backend='cuda')
+#    def ping():
+#        start = time.perf_counter()
+#        a = 0
+#        for i in range(200000000):
+#            a += i
+#        print(f"Time needed {time.perf_counter() - start}")
+#        return a
+#    ping()
 
 
 @bot.command(name='DISABLEDcmd', pass_context=True)
 async def SUInfo(ctx):
+    return
     if Bot_SU.checkSu(ctx.author) == 1:
         help_embed = discord.Embed(title=f"**Superuser info**", icon_url=bot.user.avatar_url, color=Color.red())
         help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2013/07/13/13/41/bash-161382__340.png')
@@ -189,11 +188,13 @@ async def helpCommandEconmonics(ctx):
 async def helpCommandEconmonics(ctx):
     help_embed = discord.Embed(title=f"**COMMANDS-MODERATOR** :small_orange_diamond: PREFIX= {bot.command_prefix}", color=Color.red())
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2013/07/12/18/00/socialism-152783__340.png')
+    help_embed.add_field(name='```purge```', value=f'Purge messages.\nUsage: {bot.command_prefix}purge AMMOUNT', inline=True)
     help_embed.add_field(name='```ban```', value=f'Ban a user.\n Usage: {bot.command_prefix}ban mention/ID', inline=True)
     help_embed.add_field(name='```unban```', value=f'Unban a user.\n Usage: {bot.command_prefix}unban mention/ID', inline=True)
     help_embed.add_field(name='```kick```', value=f'Kick a user.\n Usage: {bot.command_prefix}kick mention/ID', inline=True)   
     help_embed.add_field(name='```role+```', value=f'Add a specific role to a user.\n Usage: {bot.command_prefix}role+ mention/ID role/roleID', inline=True)
     help_embed.add_field(name='```role-```', value=f'Remove a specific role from a user.\n Usage: {bot.command_prefix}role+ mention/ID role/roleID', inline=True)
+    help_embed.add_field(name='```rolecolour```', value=f'Change the colour of a role.\n Usage: {bot.command_prefix}rolecolour role/ID [hexadecimal=0xFFFF00]', inline=True)
     help_embed.set_footer(text=f'!!! Required: Bot-Moderator !!!', icon_url='https://cdn.pixabay.com/photo/2013/04/01/09/02/important-98442__340.png')
     await ctx.send(embed=help_embed)
 
@@ -204,7 +205,7 @@ async def helpCommandEconmonics(ctx):
     help_embed.set_thumbnail(url='https://cdn.pixabay.com/photo/2015/12/10/16/39/shield-1086702__340.png')
     help_embed.add_field(name='```addmod```', value=f'Add a new Bot-Moderator (Admin required).\n Usage: {bot.command_prefix}addmod mention/ID', inline=True)
     help_embed.add_field(name='```delmod```', value=f'Remove a Bot-Moderator (Admin required).\n Usage: {bot.command_prefix}delmod mention/ID', inline=True)
-    help_embed.add_field(name='```initall```', value=f'Initialize all server members to the database (required).\n Usage: {bot.command_prefix}initall', inline=True)
+    help_embed.add_field(name='```initall```', value=f'Initialize all server members to the database (15s cooldown) (required).\n Usage: {bot.command_prefix}initall', inline=True)
     help_embed.set_footer(text=f'!!! Required: ADMINISTRATOR !!!', icon_url='https://cdn.pixabay.com/photo/2013/04/01/09/02/important-98442__340.png')
     await ctx.send(embed=help_embed)
 
@@ -212,7 +213,7 @@ async def helpCommandEconmonics(ctx):
 @bot.command(name='serverinfo', pass_context=True)
 async def showServerinfo(ctx):
     creationTime = ctx.guild.created_at.strftime("%d/%m/%y")
-    serverinfo_embed = discord.Embed(title=f"**SERVERINFO** :globe_with_meridians:", url=ctx.guild.avatar.url, color=Color.red())
+    serverinfo_embed = discord.Embed(title=f"**SERVERINFO** :globe_with_meridians:", url=ctx.guild.icon.url, color=Color.red())
     serverinfo_embed.set_thumbnail(url="https://cdn.pixabay.com/photo/2016/06/26/23/32/information-1481584__340.png")
     serverinfo_embed.add_field(name='Name', value=f'{ctx.guild.name}\n--------------------', inline=True)
     serverinfo_embed.add_field(name='Server-ID', value=f'{ctx.guild.id}\n--------------------', inline=True)
@@ -319,7 +320,7 @@ async def squareRoot(ctx, num):
     if int(num) <= 9999999999:
         await ctx.send(int(num)**0.5)
 
-
+@commands.cooldown(1, 15, commands.BucketType.guild)
 @bot.command(name='initall', pass_context=True)
 @commands.has_permissions(administrator=True)
 async def initialize_all_members(ctx):
@@ -344,7 +345,7 @@ async def initialize_all_members(ctx):
 #        Common_User.initializeUsersDB(member)
     
 
-
+@commands.cooldown(1, 15, commands.BucketType.guild)
 @bot.command(name='initallSU')
 async def initialize_all_members(ctx):
     if Bot_SU.checkSu(ctx.author) == 1:
@@ -369,9 +370,12 @@ async def getModerationLevel(ctx, user: discord.Member=None):
     modMentions = []
     for i in mods:
         modMentions.append(f"<@{i}>")
-    servermods_embed = discord.Embed(title=f"**MODERATORS** :hammer_pick:", url=ctx.guild.icon.url, color=Color.red())
-    servermods_embed.add_field(name='active moderators:', value="\n".join(modMentions), inline=True)
-    await ctx.send(embed=servermods_embed)
+    if modMentions:
+        servermods_embed = discord.Embed(title=f"**MODERATORS** :hammer_pick:", url=ctx.guild.icon.url, color=Color.red())
+        servermods_embed.add_field(name='active moderators:', value="\n".join(modMentions), inline=True)
+        await ctx.send(embed=servermods_embed)
+    else:
+        await ctx.send("No active server moderations!")
     
 
 @bot.command(name='addmod', pass_context=True)
@@ -633,7 +637,24 @@ async def ownerCommand00000(ctx, user: discord.Member, *args):
     await user.send(f'You was banned from {ctx.guild.name}. Reason: {reasonBan}.')
     print(f"{ctx.author}/{ctx.author.id} banned user: {user}/{user.id}")
    
-    
+
+@bot.command(name='rolecolour', pass_context=True)
+async def changeRoleColour(ctx, role: discord.Role, colour: discord.Colour):
+    if Bot_Moderator.isMod(ctx.guild, ctx.author):
+        await role.edit(colour=colour)
+        await ctx.send(f"Changed colour of {role.name} to {colour}")
+
+
+@bot.command(name='purge', pass_context=True)
+async def purgeMessages(ctx, num):
+    return await ctx.send("Command temporary disabled")
+    if Bot_Moderator.isMod(ctx.guild, ctx.author):
+        await ctx.message.delete()
+        await ctx.channel.purge(limit=int(num))
+        await ctx.send(f"Deleted {num} messages :green_circle:")
+
+
+
 #@bot.command(name='getAllSU', pass_context=True)
 #@commands.is_owner()
 #async def getUsersOfModerationLevel(ctx, modLevel):
@@ -649,6 +670,6 @@ async def ownerCommand00000(ctx, user: discord.Member, *args):
 
 
 
-# https://discord.com/api/oauth2/authorize?client_id=<YOUR_BOT_ID>&permissions=8&scope=bot
+# https://discord.com/api/oauth2/authorize?client_id=1013334885143945216&permissions=8&scope=bot
 
 bot.run("YOUR-TOKEN")

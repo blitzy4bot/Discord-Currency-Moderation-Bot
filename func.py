@@ -1,7 +1,5 @@
 import os
 import sqlite3
-from numba import jit, cuda
-import numba
 from multiprocessing import Pool
 
 
@@ -207,15 +205,15 @@ class Bot_Moderator(Common_User):
         super(Common_User).__init__(self, user_id, username, gold,  isSuperuser, isActive, isVIP)
     
     def deleteMod(user, guild):
-        cursor3.execute(f"""select exists(select user_id from MODSERVERS where user_id= {user.id} and modServer = {guild.id})""")
+        cursor3.execute(f"""select exists(select * from MODSERVERS where user_id= {user.id} and modServer = {guild.id})""")
         result = cursor3.fetchone()
         if 1 in result:
-            return 1
-        else:
             cursor3.execute(f"DELETE FROM MODSERVERS where user_id = {user.id} and modServer = {guild.id}")
-            con.commit()
+            con3.commit()
             return 0
-
+        else:
+            return 1
+            
     def addMod(user, guild):
         cursor3.execute(f"""select exists(select * from MODSERVERS where modServer = {guild.id} and user_id = {user.id})""")
         con3.commit()
@@ -224,7 +222,7 @@ class Bot_Moderator(Common_User):
             return 1
         else:
             newEntry3([user.id, guild.id])
-            con.commit()
+            con3.commit()
             return 0
     
     def modList(guild):
